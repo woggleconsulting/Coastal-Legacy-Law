@@ -1,0 +1,140 @@
+void schedule.workdrive_updateMatterType()
+{
+teamId = "bvmdgd891e99afb784020ae0d346b384148d9";
+// ── 1. Get matter type picklist values from CRM ──
+getMatterTypeValues = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v8/settings/global_picklists/6994809000000602247"
+	type :GET
+	connection:"zoho_crm"
+];
+picklistValues = getMatterTypeValues.get("global_picklists").get(0).get("pick_list_values");
+info {"picklistValues":picklistValues};
+// Build list of active picklist display values
+activeValues = list();
+for each  value in picklistValues
+{
+	if(value.get("type").equals("used") && !value.get("display_value").equals("-None-"))
+	{
+		activeValues.add(value.get("display_value"));
+	}
+}
+info {"activeValues":activeValues};
+// ── 2. Get existing data templates ──
+header = Map();
+header.put("Accept","application/vnd.api+json");
+header.put("Content-Type","application/vnd.api+json");
+getDataTemplates = invokeurl
+[
+	url :"https://www.zohoapis.com/workdrive/api/v1/teams/" + teamId + "/datatemplates"
+	type :GET
+	headers:header
+	connection:"zworkdrive"
+];
+info {"existingDataTemplates":getDataTemplates};
+// Build maps of existing template names, IDs, and statuses
+// Skip the Client Permissions template — that's managed manually
+existingTemplateNames = list();
+existingTemplateMap = Map();
+existingTemplateStatus = Map();
+if(!getDataTemplates.isNull() && getDataTemplates.containsKey("data"))
+{
+	for each  dataTemplate in getDataTemplates.get("data")
+	{
+		templateName = dataTemplate.get("attributes").get("name");
+		if(!templateName.equals("Client Permissions"))
+		{
+			existingTemplateNames.add(templateName);
+			existingTemplateMap.put(templateName,dataTemplate.get("id"));
+			existingTemplateStatus.put(templateName,dataTemplate.get("attributes").get("status"));
+		}
+	}
+}
+info {"existingTemplateNames":existingTemplateNames};
+// ── 3. Create missing data templates (no custom fields) ──
+for each  matterType in activeValues
+{
+	if(!existingTemplateNames.contains(matterType))
+	{
+		// Create the data template
+		data = Map();
+		data_param = Map();
+		att_param = Map();
+		att_param.put("name",matterType);
+		att_param.put("description","Matter type template for " + matterType);
+		data_param.put("attributes",att_param);
+		data_param.put("type","datatemplates");
+		data.put("data",data_param);
+		createResponse = invokeurl
+		[
+			url :"https://www.zohoapis.com/workdrive/api/v1/teams/" + teamId + "/datatemplates"
+			type :POST
+			parameters:data.toString()
+			headers:header
+			connection:"zworkdrive"
+		];
+		info {"createTemplate_" + matterType:createResponse};
+	}
+	else
+	{
+		// Re-enable if it exists but is currently disabled
+		if(existingTemplateStatus.get(matterType).equals("false") || existingTemplateStatus.get(matterType).equals(false))
+		{
+			templateId = existingTemplateMap.get(matterType);
+			enableData = Map();
+			enableData_param = Map();
+			enableAtt = Map();
+			enableAtt.put("status","true");
+			enableData_param.put("attributes",enableAtt);
+			enableData_param.put("type","datatemplates");
+			enableData.put("data",enableData_param);
+			enableResponse = invokeurl
+			[
+				url :"https://www.zohoapis.com/workdrive/api/v1/datatemplates/" + templateId
+				type :PATCH
+				parameters:enableData.toString()
+				headers:header
+				connection:"zworkdrive"
+			];
+			info {"reEnabled_" + matterType:enableResponse};
+		}
+		else
+		{
+			info {"skipped_existing":matterType};
+		}
+	}
+}
+// ── 4. Disable templates that no longer match an active picklist value ──
+for each  existingName in existingTemplateNames
+{
+	if(!activeValues.contains(existingName))
+	{
+		templateId = existingTemplateMap.get(existingName);
+		// Only disable if currently enabled
+		if(!existingTemplateStatus.get(existingName).equals("false") && !existingTemplateStatus.get(existingName).equals(false))
+		{
+			disableData = Map();
+			disableData_param = Map();
+			disableAtt = Map();
+			disableAtt.put("status","false");
+			disableData_param.put("attributes",disableAtt);
+			disableData_param.put("type","datatemplates");
+			disableData.put("data",disableData_param);
+			disableResponse = invokeurl
+			[
+				url :"https://www.zohoapis.com/workdrive/api/v1/datatemplates/" + templateId
+				type :PATCH
+				parameters:disableData.toString()
+				headers:header
+				connection:"zworkdrive"
+			];
+			info {"disabled_" + existingName:disableResponse};
+		}
+		else
+		{
+			info {"already_disabled":existingName};
+		}
+	}
+}
+info "workdrive_updateMatterType complete";
+}

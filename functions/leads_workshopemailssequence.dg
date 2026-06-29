@@ -1,0 +1,4 @@
+void automation.leads_workshopEmailsSequence_day2(Int recId)
+{
+standalone.workshopEmailSequence(recId,2);
+}

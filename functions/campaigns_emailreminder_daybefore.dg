@@ -1,0 +1,71 @@
+void automation.campaigns_emailReminder_dayBefore(Int recId)
+{
+emailTemplateId = "6994809000001324269";
+// paging variable (getRelatedRecords limits to 200 per call)
+pageList = {1,2,3,4,5,6,7,8,9,10};
+// loop through pages of related leads
+for each  pageIndex in pageList
+{
+	relatedLeads = zoho.crm.getRelatedRecords("Leads","Campaigns",recId,pageIndex);
+	if(relatedLeads.size() == 0)
+	{
+		break;
+	}
+	for each  lead in relatedLeads
+	{
+		memberStatus = ifnull(lead.get("Member_Status"),"");
+		// only proceed if status != cancelled
+		if(memberStatus != "Cancelled" && memberStatus != "Canceled")
+		{
+			leadId = lead.get("id");
+			leadEmail = ifnull(lead.get("Email"),"");
+			// ensure lead has an email address
+			if(leadEmail != "")
+			{
+				currentLookup = lead.get("Associated_Campaign");
+				currentLookupId = "";
+				if(currentLookup != null)
+				{
+					currentLookupId = currentLookup.get("id");
+				}
+				if(currentLookupId.toString() != recId.toString())
+				{
+					updateMap = Map();
+					updateMap.put("Associated_Campaign",recId);
+					updateResp = zoho.crm.updateRecord("Leads",leadId,updateMap);
+					info "Updated Associated Campaign for Lead " + leadId;
+				}
+				// formats recipient array as requested: [{email: lead.email}]
+				toAddressList = List();
+				toAddressList.add({"email":leadEmail});
+				requestMap = Map();
+				requestMap.put("from",{"email":zoho.adminuserid});
+				requestMap.put("to",toAddressList);
+				requestMap.put("template",{"id":emailTemplateId});
+				dataList = List();
+				dataList.add(requestMap);
+				requestPayload = Map();
+				requestPayload.put("data",dataList);
+				//force map to string
+				jsonString = "" + requestPayload;
+				try 
+				{
+					sendEmailResponse = invokeurl
+					[
+						url :"https://www.zohoapis.com/crm/v8/Leads/" + leadId + "/actions/send_mail"
+						type :POST
+						parameters:jsonString
+						connection:"zcrm"
+					];
+					info "Sent to " + leadEmail + ": " + sendEmailResponse;
+				}
+				catch (e)
+				{
+					info "Failed for " + leadEmail + ": " + e;
+				}
+			}
+		}
+	}
+}
+info "";
+}

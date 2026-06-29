@@ -1,0 +1,21 @@
+[
+  {
+    "layout": {
+      "name": "Standard",
+      "id": "6994809000000600312"
+    },
+    "name": "CONNECTEDRECORDS MMLFIELDHIDE",
+    "modified_by": null,
+    "description": "Internal Layout Rule for Connected To Field",
+    "generated_type": "default",
+    "active": true,
+    "id": "6994809000000607479",
+    "source": "web",
+    "created_by": null,
+    "primary_field": {
+      "api_name": "Connected_To__s",
+      "id": "6994809000000604583"
+    },
+    "module": "Accounts"
+  }
+]

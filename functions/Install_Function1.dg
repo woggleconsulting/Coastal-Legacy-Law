@@ -1,0 +1,11 @@
+void ExtensionAction.Install_Function1(map installParamMap)
+{
+scheduledMap = Map();
+getmap = {"nameSpace":"<portal_name.extension_namespace>"};
+apiresponse = zoho.crm.invokeConnector("crm.zapikey",getmap);
+zapikey = apiresponse.get("response");
+crm_signal_webhook_url = "https://platform.zoho.com/crm/v2/functions/zohobookingstest__addeventandcontactfromzohobookings/actions/execute?auth_type=apikey&zapikey=" + zapikey;
+scheduledMap.put("reqBody",{"urlMap":{"ACTION":"DELETE","WEBHOOK_URL":crm_signal_webhook_url}});
+response = zoho.crm.invokeConnector("zohobookingstest.bookingsapi.crmpluginhandler",scheduledMap);
+info response;
+}

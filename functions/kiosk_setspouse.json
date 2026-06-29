@@ -1,0 +1,65 @@
+{
+  "id": "1716576000000133001",
+  "api_name": "kiosk_setspouse",
+  "display_name": "kiosk_setSpouse",
+  "category": "automation",
+  "namespace": "automation",
+  "return_type": "void",
+  "language": "deluge",
+  "source": "crm",
+  "rest_api": [
+    {
+      "active": false,
+      "type": "oauth",
+      "url": "https://crm.zoho.com/crm/v7/functions/kiosk_setspouse/actions/execute?auth_type=oauth"
+    },
+    {
+      "active": false,
+      "type": "zapikey",
+      "url": "https://crm.zoho.com/crm/v7/functions/kiosk_setspouse/actions/execute?auth_type=apikey&zapikey=1003.54582d83cf1bf5ef29214bc16f1cdc1d.6055fb9536c658116a6b1777344a917d"
+    }
+  ],
+  "associated_place": [
+    {
+      "module": "Leads",
+      "name": "Lead Meeting Setup - Inactive",
+      "_type": "KIOSK",
+      "isOldDataNeeded": false,
+      "arguments": [
+        {
+          "name": "clientId",
+          "value": "5.3d createClientRecord > CreatedRecord.Lead Id"
+        },
+        {
+          "name": "spouseId",
+          "value": "5.2 createPOCRecord > CreatedRecord.Lead Id"
+        }
+      ],
+      "id": "6994809000005420334",
+      "status": false
+    },
+    {
+      "module": "Leads",
+      "name": "Lead Meeting Setup - Published",
+      "_type": "KIOSK",
+      "isOldDataNeeded": false,
+      "arguments": [
+        {
+          "name": "clientId",
+          "value": "5.3d createClientRecord > CreatedRecord.Lead Id"
+        },
+        {
+          "name": "spouseId",
+          "value": "5.2 createPOCRecord > CreatedRecord.Lead Id"
+        }
+      ],
+      "id": "6994809000005425025",
+      "status": true
+    }
+  ],
+  "description": null,
+  "createdTime": 1772556885000,
+  "updatedTime": 1772742441000,
+  "arguments": null,
+  "detailStatus": 200
+}

@@ -1,0 +1,162 @@
+void automation.contacts_FormatFileName(Int contactId)
+{
+info "=== START: Processing Contact ID: " + contactId + " ===";
+contactRecord = zoho.crm.getRecordById("Contacts",contactId);
+accountNameLookup = contactRecord.get("Account_Name");
+info "Current Account_Name lookup: " + accountNameLookup;
+// Only proceed if no account exists yet
+if(accountNameLookup == null)
+{
+	info "No existing account found - proceeding with creation logic";
+	// Check if this contact appears in another contact's subform
+	coqlQuery = {"select_query":"SELECT id, Parent_Id FROM Other_Contacts WHERE Contact.id = '" + contactId + "' LIMIT 1"};
+	info "COQL Query: " + coqlQuery;
+	coqlResp = invokeurl
+	[
+		url :"https://www.zohoapis.com/crm/v8/coql"
+		type :POST
+		parameters:coqlQuery.toString()
+		connection:"zcrm"
+	];
+	info "COQL Response: " + coqlResp;
+	parentContactId = null;
+	existingAccountId = null;
+	if(coqlResp.get("data") != null && coqlResp.get("data").size() > 0)
+	{
+		info "Found subform entry - this contact is linked to a parent";
+		subformRow = coqlResp.get("data").get(0);
+		parentContactLookup = subformRow.get("Parent_Id");
+		info "Parent Contact Lookup: " + parentContactLookup;
+		if(parentContactLookup != null)
+		{
+			parentContactId = parentContactLookup.get("id");
+			info "Parent Contact ID: " + parentContactId;
+			// Get parent contact to check for existing account
+			parentContact = zoho.crm.getRecordById("Contacts",parentContactId);
+			existingAccountLookup = parentContact.get("Account_Name");
+			info "Parent's Account_Name lookup: " + existingAccountLookup;
+			if(existingAccountLookup != null)
+			{
+				existingAccountId = existingAccountLookup.get("id");
+				info "Parent has existing Account ID: " + existingAccountId;
+			}
+			else
+			{
+				info "Parent has NO existing Account";
+			}
+		}
+		else
+		{
+			info "ERROR: Parent_Id lookup returned null";
+		}
+	}
+	else
+	{
+		info "No parent found - this is a standalone contact";
+	}
+	// If found a parent with an account, use that account
+	if(existingAccountId != null)
+	{
+		info "BRANCH: Linking to existing parent account";
+		updateMap = Map();
+		updateMap.put("Account_Name",existingAccountId);
+		zoho.crm.updateRecord("Contacts",contactId,updateMap);
+		info "Successfully linked Contact " + contactId + " to Account " + existingAccountId;
+	}
+	// Otherwise create new account for this contact network
+	else
+	{
+		info "BRANCH: Creating new account for contact network";
+		// Use parent contact for name generation if found, otherwise current contact
+		nameSourceId = if(parentContactId != null,parentContactId,contactId);
+		info "Using Contact ID " + nameSourceId + " for name generation";
+		formattedName = standalone.generateFileName("Contacts",nameSourceId);
+		info "Generated formatted name: " + formattedName;
+		// Fallback: if name generation came back empty, build a basic name from the contact
+		if(formattedName == "")
+		{
+			info "Name generation empty - building default name from Contact " + contactId;
+			fallbackRec = zoho.crm.getRecordById("Contacts",contactId);
+			fbFirst = fallbackRec.get("First_Name");
+			fbLast = fallbackRec.get("Last_Name");
+			if(fbLast != null && fbLast != "" && fbFirst != null && fbFirst != "")
+			{
+				formattedName = fbLast + ", " + fbFirst;
+			}
+			else if(fbLast != null && fbLast != "")
+			{
+				formattedName = fbLast;
+			}
+			else if(fbFirst != null && fbFirst != "")
+			{
+				formattedName = fbFirst;
+			}
+			info "Default name resolved to: " + formattedName;
+		}
+		if(formattedName != "")
+		{
+			createFileReq = Map();
+			createFileReq.put("Account_Name",formattedName);
+			info "Creating Account with name: " + formattedName;
+			createFileResp = zoho.crm.createRecord("Accounts",createFileReq,{"trigger":{"workflow"}});
+			info "Account creation response: " + createFileResp;
+			if(createFileResp.get("id") != null)
+			{
+				accountId = createFileResp.get("id");
+				info "Successfully created Account ID: " + accountId;
+				idsToUpdate = {contactId};
+				info "Initial update list: [" + contactId + "]";
+				// If there's a parent, update them and their network too
+				if(parentContactId != null)
+				{
+					info "Adding parent and their network to update list";
+					idsToUpdate.add(parentContactId);
+					parentRecord = zoho.crm.getRecordById("Contacts",parentContactId);
+					otherContactsSubform = parentRecord.get("Other_Contacts");
+					info "Parent's Other_Contacts subform: " + otherContactsSubform;
+					if(otherContactsSubform != null && otherContactsSubform.size() > 0)
+					{
+						info "Processing " + otherContactsSubform.size() + " subform entries";
+						for each  relatedContact in otherContactsSubform
+						{
+							relatedContactLookup = relatedContact.get("Contact");
+							if(relatedContactLookup != null)
+							{
+								relatedId = relatedContactLookup.get("id");
+								idsToUpdate.add(relatedId);
+								info "Added related contact ID: " + relatedId;
+							}
+						}
+					}
+					else
+					{
+						info "Parent has no subform entries";
+					}
+				}
+				info "Final update list: " + idsToUpdate;
+				updateMap = Map();
+				updateMap.put("Account_Name",accountId);
+				for each  id in idsToUpdate
+				{
+					info "Updating Contact " + id + " with Account " + accountId;
+					zoho.crm.updateRecord("Contacts",id,updateMap);
+				}
+				info "Successfully updated all contacts in network";
+			}
+			else
+			{
+				info "ERROR: Account creation failed - no ID returned";
+			}
+		}
+		else
+		{
+			info "ERROR: Generated formatted name is empty - skipping account creation";
+		}
+	}
+}
+else
+{
+	info "Contact already has an account - skipping";
+}
+info "=== END: Contact ID " + contactId + " ===";
+}

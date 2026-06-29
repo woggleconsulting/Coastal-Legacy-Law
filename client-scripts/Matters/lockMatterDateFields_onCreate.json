@@ -1,0 +1,21 @@
+{
+  "id": "6994809000003844217",
+  "uuid": "15aa5144-d98f-4d21-8a10-80b7be2eb10b",
+  "name": "lockMatterDateFields_onCreate",
+  "description": null,
+  "page_definition": "module_create",
+  "page_uuid": "6fc44e6c-652a-4278-86d9-c7a65a8c8185",
+  "module": "Matters",
+  "layout": "Standard",
+  "event_type": "page",
+  "event": "onLoad",
+  "active": false,
+  "precedence": 1,
+  "size": 688,
+  "source": "crm",
+  "source_code_url": "https://22906ff1-4287-4695-b3a9-38b3fd26e17e.zappsusercontent.com/appfiles/v2/22906ff1-4287-4695-b3a9-38b3fd26e17e/1.0/4b9a73b9bbc1cfc955f8a14cec9936ba124fc6b7bfd8dc6f6348fed8175c9a74/filerevision/r2/583533f2-facf-4a71-a1b1-4f3682522f81.js",
+  "createdTime": "2026-02-16T11:33:23-05:00",
+  "updatedTime": "2026-06-10T16:24:32-04:00",
+  "created_by": "CLL Account",
+  "modified_by": "CLL Account"
+}

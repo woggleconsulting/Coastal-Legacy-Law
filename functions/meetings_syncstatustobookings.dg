@@ -1,0 +1,57 @@
+void automation.meetings_syncStatusToBookings(Int meeting_id)
+{
+meeting_record = zoho.crm.getRecordById("Events",meeting_id);
+booking_id = meeting_record.get("zohobookingstest__BookingId");
+crm_status = meeting_record.get("Meeting_Status");
+info "Sync Started for Meeting ID: " + meeting_id;
+info "Booking ID: " + booking_id;
+info "CRM Status: " + crm_status;
+if(booking_id == null || booking_id == "")
+{
+	info "Error: Booking ID is empty.";
+	return;
+}
+action = null;
+if(crm_status == "Booked" || crm_status == "Scheduled")
+{
+	action = "confirm";
+}
+// 'confirm' is standard for generic updates
+else if(crm_status == "Rescheduled")
+{
+	action = "reschedule";
+}
+else if(crm_status == "Completed")
+{
+	action = "completed";
+}
+/* else if(crm_status == "Cancelled")
+{
+	action = "cancel";
+} */
+else if(crm_status == "No-Show")
+{
+	action = "noshow";
+}
+if(action != null)
+{
+	params = Map();
+	params.put("booking_id",booking_id);
+	params.put("action",action);
+	url_string = "https://www.zohoapis.com/bookings/v1/json/updateappointment";
+	info "Posting to: " + url_string;
+	info "Params: " + params;
+	response = invokeurl
+	[
+		url :url_string
+		type :POST
+		parameters:params
+		connection:"zbookings"
+	];
+	info "API Response: " + response;
+}
+else
+{
+	info "No valid action for status: " + crm_status;
+}
+}

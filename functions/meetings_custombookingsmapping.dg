@@ -1,0 +1,4 @@
+void automation.meetings_customBookingsMapping(int recId)
+{
+standalone.zbookings_customFieldMapping(recId);
+}

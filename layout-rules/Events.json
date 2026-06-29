@@ -1,0 +1,48 @@
+[
+  {
+    "layout": {
+      "name": "Standard",
+      "id": "6994809000000600323"
+    },
+    "name": "Meeting Venue Rule",
+    "modified_by": null,
+    "description": "",
+    "generated_type": "default",
+    "active": true,
+    "id": "6994809000000607493",
+    "source": "web",
+    "created_by": null,
+    "primary_field": {
+      "api_name": "Meeting_Venue__s",
+      "id": "6994809000000604455"
+    },
+    "module": "Events"
+  },
+  {
+    "layout": {
+      "name": "Standard",
+      "id": "6994809000000600323"
+    },
+    "created_time": "2026-02-05T10:16:55-05:00",
+    "modified_time": "2026-03-17T10:31:10-04:00",
+    "name": "Hidden Fields",
+    "modified_by": {
+      "name": "CLL Account",
+      "id": "6994809000000574001"
+    },
+    "description": "",
+    "generated_type": "custom",
+    "active": true,
+    "id": "6994809000003113202",
+    "source": "web",
+    "created_by": {
+      "name": "CLL Account",
+      "id": "6994809000000574001"
+    },
+    "primary_field": {
+      "api_name": "Event_Title",
+      "id": "6994809000000602566"
+    },
+    "module": "Events"
+  }
+]

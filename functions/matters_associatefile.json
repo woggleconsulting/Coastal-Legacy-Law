@@ -1,0 +1,43 @@
+{
+  "id": "1716576000000007039",
+  "api_name": "matters_associatefile",
+  "display_name": "matters_associateFile",
+  "category": "automation",
+  "namespace": "automation",
+  "return_type": "void",
+  "language": "deluge",
+  "source": "crm",
+  "rest_api": [
+    {
+      "active": false,
+      "type": "oauth",
+      "url": "https://crm.zoho.com/crm/v7/functions/matters_associatefile/actions/execute?auth_type=oauth"
+    },
+    {
+      "active": false,
+      "type": "zapikey",
+      "url": "https://crm.zoho.com/crm/v7/functions/matters_associatefile/actions/execute?auth_type=apikey&zapikey=1003.54582d83cf1bf5ef29214bc16f1cdc1d.6055fb9536c658116a6b1777344a917d"
+    }
+  ],
+  "associated_place": [
+    {
+      "module": "Matters",
+      "name": "matters_associateFile",
+      "_type": "workflow_rules",
+      "isOldDataNeeded": false,
+      "arguments": [
+        {
+          "name": "recId",
+          "value": "Matters.Matter Id"
+        }
+      ],
+      "id": 6994809000000607000,
+      "status": true
+    }
+  ],
+  "description": null,
+  "createdTime": 1758891461000,
+  "updatedTime": 1758891462000,
+  "arguments": null,
+  "detailStatus": 200
+}

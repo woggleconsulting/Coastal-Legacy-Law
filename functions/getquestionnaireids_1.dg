@@ -1,0 +1,33 @@
+string standalone.getQuestionnaireIDs()
+{
+// Created By: Harjot Singh - Aether Automation
+// May 9 2025
+// Function to make a call to Decision Vault through their API end point to get all of the questionnairs they currently have available in Decision Vault and return them to use in a client script function
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// first create the headers, put in the auth token, and accept json data
+getQuestionnaireIDsHeaders = Map();
+getQuestionnaireIDsHeaders.put("Authorization","Token " + zoho.crm.getOrgVariable("CRMVariableOAuthToken"));
+getQuestionnaireIDsHeaders.put("Accept","application/json");
+getQuestionnaireIDsResponse = invokeurl
+[
+	url :"https://api.decisionvault.com/v1/questionnaires"
+	type :GET
+	headers:getQuestionnaireIDsHeaders
+];
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// initialize a list for the response data to be parsed and added
+questionnaireIDs = list();
+getQuestionnaireIDsResults = getQuestionnaireIDsResponse.get("results");
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// loop through the list that is returned from the API, place them into our list
+for each  questionnaireID in getQuestionnaireIDsResults
+{
+	if(questionnaireID.get("active") == true)
+	{
+		questionnaireIDs.add(questionnaireID);
+	}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// return the single string to the client script that called this function
+return questionnaireIDs;
+}

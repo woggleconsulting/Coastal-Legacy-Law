@@ -1,0 +1,21 @@
+{
+  "id": "6994809000001371347",
+  "name": "formatDateTimeFields",
+  "file_name": "formatDateTimeFields.js",
+  "description": null,
+  "type": "js",
+  "source": "user",
+  "sdk": null,
+  "deprecated": false,
+  "size": 1391,
+  "uri": "https://48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef.zappsusercontent.com/appfiles/v2/48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef/1.0/67fc382e3245be5bb38c02062c30fd1fd5fe314a22a25a51cf50e8644d413f15/filerevision/r1/formatDateTimeFields.js",
+  "compiled_file_uri": "https://48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef.zappsusercontent.com/appfiles/v2/48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef/1.0/67fc382e3245be5bb38c02062c30fd1fd5fe314a22a25a51cf50e8644d413f15/filerevision/r1/formatDateTimeFields.--com1--.js",
+  "definition_file_uri": "https://48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef.zappsusercontent.com/appfiles/v2/48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef/1.0/67fc382e3245be5bb38c02062c30fd1fd5fe314a22a25a51cf50e8644d413f15/filerevision/r1/formatDateTimeFields.js",
+  "sourcemap_file_uri": "https://48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef.zappsusercontent.com/appfiles/v2/48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef/1.0/67fc382e3245be5bb38c02062c30fd1fd5fe314a22a25a51cf50e8644d413f15/filerevision/r1/formatDateTimeFields.--com1--.js.map",
+  "help_link_uri": "https://48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef.zappsusercontent.com/appfiles/v2/48d2df79-d40e-4c2b-9ea2-2cc91b2c49ef/1.0/67fc382e3245be5bb38c02062c30fd1fd5fe314a22a25a51cf50e8644d413f15/filerevision/r1/formatDateTimeFields.js",
+  "created_by": "CLL Account",
+  "modified_by": null,
+  "createdTime": "2026-01-09T11:30:37-05:00",
+  "updatedTime": null,
+  "script_uri_field": "compiled_file_uri"
+}

@@ -1,0 +1,5 @@
+void schedule.campaignEventReminders()
+{
+//info zoho.crm.getRecordById("Leads", 6994809000001313037);
+info zoho.crm.getRelatedRecords("Campaigns","Leads",6994809000001313037);
+}

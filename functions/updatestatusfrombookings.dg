@@ -1,0 +1,203 @@
+string standalone.UpdateStatusFromBookings(map crmAPIRequest)
+{
+booking_id = crmAPIRequest.get("body").get("booking_id");
+status = crmAPIRequest.get("body").get("status");
+// LOG 1: Check inputs
+info "--- START FUNCTION ---";
+info "Received ID: " + booking_id;
+info "Received Status: " + status;
+// 1. Safety Check: Ensure data arrived
+if(booking_id == null || booking_id == "")
+{
+	return "Error: No Booking ID received.";
+}
+// 2. Clean the ID to match CRM format
+clean_id = booking_id.replaceAll("#","");
+info "Clean ID: " + clean_id;
+// 3. Run COQL Query
+coql_query = "select id, Meeting_Status from Events where zohobookingstest__BookingId = '" + clean_id + "'";
+url = "https://www.zohoapis.com/crm/v2/coql";
+param_map = Map();
+param_map.put("select_query",coql_query);
+response = invokeurl
+[
+	url :url
+	type :POST
+	parameters:param_map.toString()
+	connection:"zcrm"
+];
+// 4. Process & Update
+if(response != null && response.get("data") != null && response.get("data").size() > 0)
+{
+	info "Match FOUND in Active Records.";
+	meeting = response.get("data").get(0);
+	crm_id = meeting.get("id");
+	new_status = null;
+	// Expanded 'if' blocks for safety
+	if(status.containsIgnoreCase("cancel"))
+	{
+		new_status = "Cancelled";
+	}
+	else if(status.containsIgnoreCase("complete"))
+	{
+		new_status = "Completed";
+	}
+	else if(status.containsIgnoreCase("show"))
+	{
+		new_status = "No-Show";
+	}
+	else if(status.containsIgnoreCase("reschedule"))
+	{
+		new_status = "Rescheduled";
+	}
+	else if(status.containsIgnoreCase("booked") || status.containsIgnoreCase("upcoming"))
+	{
+		new_status = "Booked";
+	}
+	if(new_status != null)
+	{
+		// A. Perform the Update
+		update_url = "https://www.zohoapis.com/crm/v2/Events/" + crm_id;
+		row = Map();
+		row.put("Meeting_Status",new_status);
+		// SYNTAX FIX: Use explicit List() instead of {}
+		data_list = List();
+		data_list.add(row);
+		data = Map();
+		data.put("data",data_list);
+		data.put("trigger",List());
+		upd_res = invokeurl
+		[
+			url :update_url
+			type :PUT
+			parameters:data.toString()
+			connection:"zcrm"
+		];
+		info "Active Update Success: " + upd_res;
+		// ---------------------------------------------------------
+		// B. RACE CONDITION FIX: "Safety Watch" Loop
+		// If status is 'Cancelled', we wait to see if integration deletes it.
+		// ---------------------------------------------------------
+		if(new_status == "Cancelled")
+		{
+			info "Status is Cancelled. Entering Safety Watch...";
+			// SYNTAX FIX: Explicit loop list
+			loop_list = List();
+			loop_list.add(1);
+			loop_list.add(2);
+			loop_list.add(3);
+			loop_list.add(4);
+			for each  step in loop_list
+			{
+				// 1. Waste time (Sleep hack)
+				dummy = zoho.crm.getRecords("Leads",1,1);
+				// 2. Check if our record is still alive
+				check_response = invokeurl
+				[
+					url :update_url
+					type :GET
+					connection:"zcrm"
+				];
+				// 3. If response is empty or error, IT WAS DELETED!
+				if(check_response.get("data") == null)
+				{
+					info "Record disappeared! Triggering Immediate Restore for ID: " + crm_id;
+					restore_url = "https://www.zohoapis.com/crm/v2/settings/recycle_bin/" + crm_id + "/actions/restore";
+					restore_res = invokeurl
+					[
+						url :restore_url
+						type :POST
+						connection:"zcrm"
+					];
+					info "Restore Result: " + restore_res;
+					// Re-apply Cancelled Status
+					re_upd = invokeurl
+					[
+						url :update_url
+						type :PUT
+						parameters:data.toString()
+						connection:"zcrm"
+					];
+					return "Success: Caught deletion and Restored CRM ID " + crm_id;
+				}
+				else
+				{
+					info "Watch Step " + step + ": Record still alive.";
+				}
+			}
+			info "Safety Watch ended. Record survived.";
+		}
+		return "Success: Updated CRM ID " + crm_id;
+	}
+	return "Status '" + status + "' skipped (no mapping).";
+}
+else
+{
+	info "No Active Record found. Proceeding to Recycle Bin check...";
+}
+// ---------------------------------------------------------
+// 5. EXISTING RECYCLE BIN LOGIC
+// (Only runs if record was already gone before script started)
+// ---------------------------------------------------------
+if(status.containsIgnoreCase("cancel"))
+{
+	info "Status is Cancel. Searching Recycle Bin...";
+	recycle_url = "https://www.zohoapis.com/crm/v2/settings/recycle_bin?type=Events";
+	recycle_response = invokeurl
+	[
+		url :recycle_url
+		type :GET
+		connection:"zcrm"
+	];
+	deleted_list = recycle_response.get("recycle_bin");
+	if(deleted_list != null && deleted_list.size() > 0)
+	{
+		for each  record in deleted_list
+		{
+			rec_booking_id = record.get("zohobookingstest__BookingId");
+			rec_name = record.get("display_name");
+			if(rec_booking_id == null)
+			{
+				rec_booking_id = "";
+			}
+			if(rec_name == null)
+			{
+				rec_name = "";
+			}
+			if(rec_booking_id.toString().contains(clean_id) || rec_name.contains(clean_id))
+			{
+				restore_id = record.get("id");
+				info "MATCH FOUND in Recycle Bin! ID: " + restore_id;
+				// Restore
+				restore_url = "https://www.zohoapis.com/crm/v2/settings/recycle_bin/" + restore_id + "/actions/restore";
+				restore_res = invokeurl
+				[
+					url :restore_url
+					type :POST
+					connection:"zcrm"
+				];
+				// Update
+				update_url = "https://www.zohoapis.com/crm/v2/Events/" + restore_id;
+				row = Map();
+				row.put("Meeting_Status","Cancelled");
+				// SYNTAX FIX: Explicit List
+				data_list = List();
+				data_list.add(row);
+				data = Map();
+				data.put("data",data_list);
+				data.put("trigger",List());
+				upd_res = invokeurl
+				[
+					url :update_url
+					type :PUT
+					parameters:data.toString()
+					connection:"zcrm"
+				];
+				return "Success: Restored and Cancelled CRM ID " + restore_id;
+			}
+		}
+	}
+}
+info "--- END FUNCTION (Failure) ---";
+return "Error: Meeting not found in CRM (Active or Recycle Bin) for Clean ID: " + clean_id;
+}

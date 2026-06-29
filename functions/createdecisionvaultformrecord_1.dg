@@ -1,0 +1,16 @@
+string button.createDecisionVaultFormRecord(String RecordID)
+{
+RecordInfo = zoho.crm.getRecordById("Deals",RecordID);
+info RecordInfo;
+runGlobalSets = standalone.DVQuestionnaireIDGlobalSet();
+MatterName = RecordInfo.get("Deal_Name");
+CreateDecisionVaultFormRecordMap = Map();
+CreateDecisionVaultFormRecordMap.put("Name",MatterName + " Form");
+CreateDecisionVaultFormRecordMap.put("Matter",RecordID);
+info CreateDecisionVaultFormRecordMap;
+CreateDecisionVaultFormRecord = zoho.crm.createRecord("Decision_Vault_Forms",CreateDecisionVaultFormRecordMap);
+info CreateDecisionVaultFormRecord;
+DecisionVaultFormRecordID = CreateDecisionVaultFormRecord.get("id");
+openUrl("https://crm.zoho.com/crm/org878545817/tab/CustomModule5/" + DecisionVaultFormRecordID + "/edit?layoutId=6994809000000600353","new window");
+return "";
+}

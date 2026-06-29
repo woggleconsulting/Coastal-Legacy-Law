@@ -1,0 +1,103 @@
+string standalone.getFormsCreator()
+{
+baseUrl_meta = "https://www.zohoapis.com/creator/v2.1/meta/legacyguardpartners/intake-form";
+baseUrl_data = "https://www.zohoapis.com/creator/v2.1/data/legacyguardpartners/intake-form";
+getForms = invokeurl
+[
+	url :baseUrl_meta + "/forms"
+	type :GET
+	connection:"zcreator"
+];
+existingFormCache = invokeurl
+[
+	url :baseUrl_data + "/report/cache_Report?max_records=1&criteria=object==forms&field_config=all"
+	type :GET
+	connection:"zcreator"
+];
+dataMap_forms = Map();
+dataMap_forms.put("object","forms");
+dataMap_forms.put("data",getForms);
+request_forms = {"data":dataMap_forms};
+if(existingFormCache.get("data").size() > 0)
+{
+	updateCache_forms = invokeurl
+	[
+		url :baseUrl_data + "/report/cache_Report/"
+		type :POST
+		parameters:request_forms.toString()
+		connection:"zcreator"
+	];
+	info {"updateCache_forms":updateCache_forms};
+}
+else
+{
+	info baseUrl_data + "/form/cache";
+	createCache_forms = invokeurl
+	[
+		url :baseUrl_data + "/form/cache"
+		type :POST
+		parameters:request_forms.toString()
+		connection:"zcreator"
+	];
+	info {"createCache_forms":createCache_forms};
+}
+fieldsData = list();
+for each  form in getForms.get("forms")
+{
+	linkName = form.get("link_name");
+	getFields = invokeurl
+	[
+		url :baseUrl_meta + "/form/" + linkName + "/fields"
+		type :GET
+		connection:"zcreator"
+	];
+	fieldsData.add({linkName:getFields.get("fields")});
+}
+existingFieldsCache = invokeurl
+[
+	url :baseUrl_data + "/report/cache_Report?criteria=object==fields&field_config=all"
+	type :GET
+	connection:"zcreator"
+];
+info existingFieldsCache;
+dataMap_fields = Map();
+dataMap_fields.put("object","fields");
+dataMap_fields.put("data",fieldsData);
+request_fields = {"data":dataMap_fields};
+if(existingFieldsCache.get("data").size() > 0)
+{
+	recordId = existingFieldsCache.get("data").get(0).get("ID");
+	updateCache_fields = invokeurl
+	[
+		url :baseUrl_data + "/report/cache_Report/" + recordId
+		type :POST
+		parameters:request_fields.toString()
+		connection:"zcreator"
+	];
+	info {"updateCache_fields":updateCache_fields};
+}
+else
+{
+	createCache_fields = invokeurl
+	[
+		url :baseUrl_data + "/form/cache"
+		type :POST
+		parameters:request_fields.toString()
+		connection:"zcreator"
+	];
+	info {"createCache_fields":createCache_fields};
+	recordId = createCache_fields.get("data").get("ID");
+}
+info fieldsData;
+fieldsJSON = fieldsData.toFile("fields_json");
+info baseUrl_data + "/report/cache_Report/" + recordId + "/File_upload/upload";
+fieldsJSONUpload = invokeurl
+[
+	url :baseUrl_data + "/report/cache_Report/" + recordId + "/File_upload/upload"
+	type :POST
+	files:fieldsJSON
+	connection:"zcreator"
+];
+info {"fieldsJSONUpload":fieldsJSONUpload};
+return "";
+}

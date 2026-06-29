@@ -1,0 +1,34 @@
+{
+  "id": "1716576000000094009",
+  "api_name": "workdrive_updatemattertype",
+  "display_name": "workdrive_updateMatterType",
+  "category": "scheduler",
+  "namespace": "schedule",
+  "return_type": "void",
+  "language": "deluge",
+  "source": "crm",
+  "rest_api": [
+    {
+      "active": false,
+      "type": "oauth",
+      "url": "https://crm.zoho.com/crm/v7/functions/workdrive_updatemattertype/actions/execute?auth_type=oauth"
+    },
+    {
+      "active": false,
+      "type": "zapikey",
+      "url": "https://crm.zoho.com/crm/v7/functions/workdrive_updatemattertype/actions/execute?auth_type=apikey&zapikey=1003.54582d83cf1bf5ef29214bc16f1cdc1d.6055fb9536c658116a6b1777344a917d"
+    }
+  ],
+  "associated_place": [
+    {
+      "name": "workdrive_updateMatterType",
+      "_type": "schedules",
+      "id": "6994809000003782754"
+    }
+  ],
+  "description": null,
+  "createdTime": 1771180535000,
+  "updatedTime": 1771245443000,
+  "arguments": null,
+  "detailStatus": 200
+}

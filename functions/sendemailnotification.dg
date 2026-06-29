@@ -1,0 +1,89 @@
+string standalone.sendEmailNotification(String module, String recId, String notficationIdsString)
+{
+recResp = zoho.crm.getRecordById(module,recId);
+if(notficationIdsString.contains(","))
+{
+	notificationIds = notficationIdsString.toList();
+}
+else
+{
+	notificationIds = list();
+	notificationIds.add(notficationIdsString);
+}
+emailList = list();
+for each  notificationId in notificationIds
+{
+	emailNotifications = invokeurl
+	[
+		url :"https://www.zohoapis.com/crm/v8/settings/automation/email_notifications/" + notificationId
+		type :GET
+		connection:"zoho_crm"
+	];
+	info emailNotifications;
+	emailNotifications = emailNotifications.get("email_notifications");
+	for each  emailNotification in emailNotifications
+	{
+		templateId = emailNotification.get("template").get("id");
+		templateModule = emailNotification.get("module").get("api_name");
+		recipientsBlock = emailNotification.get("recipients");
+		toList = recipientsBlock.get("to");
+		for each  recipient in toList
+		{
+			if(recipient.get("type") == "merge_field")
+			{
+				rawApiName = recipient.get("details").get("api_name");
+				cleanAPIName = rawApiName.replaceAll("!","");
+				cleanedAPIName = cleanAPIName.subString(2,cleanAPIName.length() - 1);
+				info cleanedAPIName;
+				if(cleanedAPIName.contains("Owner"))
+				{
+					OwnerEmail = recResp.get("Owner").get("email");
+					emailList.add({"email":OwnerEmail});
+				}
+				if(cleanedAPIName.contains("Contact"))
+				{
+					ContactID = recResp.get("Contact_Name").get("id");
+					APIList = cleanedAPIName.toList(".");
+					ContactInfo = zoho.crm.getRecordById("Contacts",ContactID);
+					if(APIList.contains("Email"))
+					{
+						if(ContactInfo.get("Email") != null)
+						{
+							emailList.add({"email":ContactInfo.get("Email")});
+						}
+					}
+					else if(APIList.contains("Secondary_Email"))
+					{
+						if(ContactInfo.get("Secondary_Email") != null)
+						{
+							emailList.add({"email":ContactInfo.get("Secondary_Email")});
+						}
+					}
+				}
+			}
+		}
+	}
+}
+info emailList;
+if(templateModule.equals("Decision_Vault_Forms"))
+{
+	// //Get DV record
+	dvFormRecord = zoho.crm.getRelatedRecords("Decision_Vault_Forms","Deals",recId);
+	recId = dvFormRecord.get(0).get("id");
+}
+//Send mail
+sendMailReqMap = Map();
+sendMailReqMap.put("from",{"email":zoho.adminuserid});
+sendMailReqMap.put("to",emailList);
+sendMailReqMap.put("template",{"id":templateId});
+sendMailReq = {"data":{sendMailReqMap}};
+info sendMailReq;
+sendMail = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v8/" + templateModule + "/" + recId + "/actions/send_mail"
+	type :POST
+	parameters:sendMailReq.toString()
+	connection:"zcrm"
+];
+return sendMail;
+}

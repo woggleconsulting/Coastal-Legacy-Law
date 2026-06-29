@@ -1,0 +1,21 @@
+{
+  "id": "6994809000005198278",
+  "uuid": "83e8dc01-989b-47bb-9c76-bee81b033919",
+  "name": "leads_emptySpouseField_Kiosk",
+  "description": null,
+  "page_definition": "module_detail",
+  "page_uuid": "066614fa-a6b9-45c8-ad6e-094bad357b03",
+  "module": "Leads",
+  "layout": "Standard",
+  "event_type": "page",
+  "event": "onLoad",
+  "active": true,
+  "precedence": 1,
+  "size": 504,
+  "source": "crm",
+  "source_code_url": "https://d5b39616-03e7-4245-894b-1bbbf9dcd01e.zappsusercontent.com/appfiles/v2/d5b39616-03e7-4245-894b-1bbbf9dcd01e/1.0/2cb759ced9f629455a27645d80b01e2bd6bdf9ddeda8d34620d9d259cbfba91c/filerevision/r1/0219077f-305e-4e48-bb85-cba56403141d.js",
+  "createdTime": "2026-03-05T16:18:27-05:00",
+  "updatedTime": null,
+  "created_by": "CLL Account",
+  "modified_by": null
+}

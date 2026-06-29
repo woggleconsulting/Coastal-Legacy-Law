@@ -1,0 +1,21 @@
+{
+  "id": "6994809000001371375",
+  "uuid": "55c62abc-bd49-4275-a574-5e00318b2652",
+  "name": "dateTimeFormater_onClone",
+  "description": null,
+  "page_definition": "module_clone",
+  "page_uuid": "e09f6abe-07fa-42ee-8cfb-825485d06718",
+  "module": "Campaigns",
+  "layout": "Standard",
+  "event_type": "page",
+  "event": "onChange",
+  "active": true,
+  "precedence": 1,
+  "size": 35,
+  "source": "crm",
+  "source_code_url": "https://ef109c2c-6855-4c94-a92d-8d7656ab1c2a.zappsusercontent.com/appfiles/v2/ef109c2c-6855-4c94-a92d-8d7656ab1c2a/1.0/6510122b4286aa69fab5dff0d508cafde57e7975e0057a0df3195aa47c964288/filerevision/r1/2241ef41-e1a0-40b6-91af-825f82b8eed1.js",
+  "createdTime": "2026-01-09T11:32:27-05:00",
+  "updatedTime": "2026-01-09T11:32:39-05:00",
+  "created_by": "CLL Account",
+  "modified_by": "CLL Account"
+}

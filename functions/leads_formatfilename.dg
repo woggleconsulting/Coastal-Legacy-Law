@@ -1,0 +1,29 @@
+void automation.leads_FormatFileName(Int leadId)
+{
+accountName = standalone.generateFileName("Leads",leadId);
+if(accountName != "")
+{
+	leadRecord = zoho.crm.getRecordById("Leads",leadId);
+	inquirerLookup = leadRecord.get("Inquirer_Lead");
+	spouseLookup = leadRecord.get("Spouse_Partner");
+	updateMap = Map();
+	updateMap.put("Company",accountName);
+	// Collect all IDs that need updating
+	idsToUpdate = {leadId};
+	if(spouseLookup != null)
+	{
+		spouseId = spouseLookup.get("id");
+		idsToUpdate.add(spouseId);
+	}
+	if(inquirerLookup != null)
+	{
+		inquirerId = inquirerLookup.get("id");
+		idsToUpdate.add(inquirerId);
+	}
+	// Update all connected records
+	for each  id in idsToUpdate
+	{
+		zoho.crm.updateRecord("Leads",id,updateMap);
+	}
+}
+}

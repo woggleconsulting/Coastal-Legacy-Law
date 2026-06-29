@@ -1,0 +1,21 @@
+{
+  "id": "6994809000000647595",
+  "name": "Concluder",
+  "file_name": "Concluder_f424678abf3970a19e97b8114f9f98f8_.js",
+  "description": "Concluder JS",
+  "type": "js",
+  "source": "internal",
+  "sdk": null,
+  "deprecated": false,
+  "size": null,
+  "uri": "https://static.zohocdn.com/crm/CRMClient/javascript/devex/libraries/Concluder_f424678abf3970a19e97b8114f9f98f8_.js",
+  "compiled_file_uri": "https://static.zohocdn.com/crm/CRMClient/javascript/devex/libraries/Concluder_f424678abf3970a19e97b8114f9f98f8_.js",
+  "definition_file_uri": null,
+  "sourcemap_file_uri": null,
+  "help_link_uri": null,
+  "created_by": "CLL Account",
+  "modified_by": null,
+  "createdTime": "2025-09-26T01:57:19-04:00",
+  "updatedTime": null,
+  "script_uri_field": "compiled_file_uri"
+}

@@ -1,0 +1,43 @@
+{
+  "id": "1716576000000143002",
+  "api_name": "leads_sendtoattorneyfuel",
+  "display_name": "leads_sendToAttorneyFuel",
+  "category": "automation",
+  "namespace": "automation",
+  "return_type": "void",
+  "language": "deluge",
+  "source": "crm",
+  "rest_api": [
+    {
+      "active": false,
+      "type": "oauth",
+      "url": "https://crm.zoho.com/crm/v7/functions/leads_sendtoattorneyfuel/actions/execute?auth_type=oauth"
+    },
+    {
+      "active": false,
+      "type": "zapikey",
+      "url": "https://crm.zoho.com/crm/v7/functions/leads_sendtoattorneyfuel/actions/execute?auth_type=apikey&zapikey=1003.54582d83cf1bf5ef29214bc16f1cdc1d.6055fb9536c658116a6b1777344a917d"
+    }
+  ],
+  "associated_place": [
+    {
+      "module": "Leads",
+      "name": "sendToAttorneyFuel",
+      "_type": "workflow_rules",
+      "isOldDataNeeded": false,
+      "arguments": [
+        {
+          "name": "leadId",
+          "value": "Leads.Lead Id"
+        }
+      ],
+      "id": 6994809000008064000,
+      "status": true
+    }
+  ],
+  "description": "c@4.21.2026 - Woggle - JF",
+  "createdTime": 1776779290000,
+  "updatedTime": 1777488886000,
+  "arguments": null,
+  "detailStatus": 200
+}

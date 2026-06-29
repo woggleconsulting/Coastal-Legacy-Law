@@ -1,0 +1,39 @@
+void automation.leads_associateCampaign(Int leadId)
+{
+lead = zoho.crm.getRecordById("Leads",leadId);
+campaignId = lead.get("Associated_Campaign").get("id");
+//Associate Lead as Member of Campaign//
+associateMap = Map();
+associateMap.put("id",campaignId);
+associateMap.put("Member_Status","Enrolled");
+requestMap = {"data":{associateMap}};
+resp = zoho.crm.updateRelatedRecord("Campaigns",campaignId,"Leads",leadId,requestMap);
+//campaignDate = zoho.crm.getRecordById("Campaigns",campaignId).get("Start_Date");
+updateMap = Map();
+existingEvents = lead.get("Upcoming_Events");
+campaignList = list();
+if(existingEvents.size() > 0)
+{
+	for each  existingEvent in existingEvents
+	{
+		if(existingEvent.get("Campaign_Name").get("id") != campaignId)
+		{
+			campaignMap = Map();
+			campaignMap.put("Campaign_Name",campaignId);
+			campaignMap.put("Sign_Up_Date",zoho.currentdate);
+			campaignList.add(campaignMap);
+		}
+	}
+	campaignList.addall(lead.get("Upcoming_Events"));
+}
+else
+{
+	campaignMap = Map();
+	campaignMap.put("Campaign_Name",campaignId);
+	campaignMap.put("Sign_Up_Date",zoho.currentdate);
+	campaignList.add(campaignMap);
+}
+updateMap.put("Upcoming_Events",campaignList.distinct());
+updateLeadRec = zoho.crm.updateRecord("Leads",leadId,updateMap);
+info updateLeadRec;
+}

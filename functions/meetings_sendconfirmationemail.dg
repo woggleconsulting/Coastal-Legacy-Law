@@ -1,0 +1,53 @@
+void automation.meetings_sendConfirmationEmail(int eventId)
+{
+event = zoho.crm.getRecordById("Events",eventId);
+if(event.isEmpty() == false)
+{
+	info "Event record fetched successfully";
+	participants = event.get("Participants");
+	leadId = "";
+	recipientEmail = "";
+	for each  p in participants
+	{
+		if(p.get("type") == "lead" && p.containsKey("participant"))
+		{
+			leadId = p.get("participant");
+			recipientEmail = p.get("Email");
+			break;
+		}
+	}
+	if(leadId != "" && recipientEmail != "")
+	{
+		fromMap = Map();
+		owner = event.get("Owner");
+		ownerEmail = ifnull(owner.get("email"),"fallback@yourdomain.com");
+		fromMap.put("email",ownerEmail);
+		toList = List();
+		toEntry = Map();
+		toEntry.put("email",recipientEmail);
+		toList.add(toEntry);
+		templateMap = Map();
+		templateMap.put("id","6994809000000868175");
+		mailEntry = Map();
+		mailEntry.put("from",fromMap);
+		mailEntry.put("to",toList);
+		mailEntry.put("template",templateMap);
+		mailDataList = List();
+		mailDataList.add(mailEntry);
+		mailData = Map();
+		mailData.put("data",mailDataList);
+		headers = Map();
+		headers.put("Content-Type","application/json");
+		mailUrl = "https://www.zohoapis.com/crm/v4/Events/" + eventId.toString() + "/actions/send_mail";
+		response = invokeurl
+		[
+			url :mailUrl
+			type :POST
+			body:mailData.toString()
+			headers:headers
+			connection:"zcrm"
+		];
+		info response;
+	}
+}
+}

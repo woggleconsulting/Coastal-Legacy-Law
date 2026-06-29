@@ -1,0 +1,44 @@
+void automation.contacts_leadConvertFunction(Int contactId)
+{
+//need to update this to make sure it's properly handling the entire converstion process needs//
+info zoho.crm.getRecordById("Contacts",contactId);
+getLeadRecords = zoho.crm.getRecords("Leads",1,200,{"converted":true},"zcrm");
+for each  lead in getLeadRecords
+{
+	if(lead.get("$converted_detail").get("contact") == contactId)
+	{
+		leadRecord = zoho.crm.getRecordById("Leads",lead.get("id"),{"converted":true},"zcrm");
+		info leadRecord;
+		break;
+	}
+}
+if(!leadRecord.get("Spouse_Partner").isNull())
+{
+	convertSpouse = zoho.crm.convertLead(leadRecord.get("Spouse_Partner").get("id"));
+}
+if(leadRecord.get("Additional_Contacts").size() > 0)
+{
+	addlContactList = list();
+	for each  addlContact in leadRecord.get("Additional_Contacts")
+	{
+		addlContactMap = Map();
+		convertContact = zoho.crm.convertLead(addlContact.get("Contact").get("id"));
+		addlContactId = convertContact.get("Contacts");
+		addlContact.remove("$in_merge");
+		addlContact.remove("$field_states");
+		addlContact.remove("Created_Time");
+		addlContact.remove("Parent_Id");
+		addlContact.remove("id");
+		addlContact.remove("$layout_id");
+		addlContact.remove("Contact_Name");
+		addlContactMap.putAll(addlContact);
+		addlContactMap.put("Contact",addlContactId);
+		addlContactList.add(addlContactMap);
+	}
+}
+updateContact = Map();
+updateContact.put("Spouse_Partner",convertSpouse.get("Contacts"));
+updateContact.put("Other_Contacts",addlContactList);
+updateContactResp = zoho.crm.updateRecord("Contacts",contactId,updateContact,{"trigger":{"workflow"}});
+info updateContactResp;
+}

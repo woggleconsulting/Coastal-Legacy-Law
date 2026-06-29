@@ -1,0 +1,21 @@
+{
+  "id": "6994809000000647597",
+  "name": "DotSDK-Suggestions-2.0",
+  "file_name": "crm_dot_sdk_suggestions.js.gzip",
+  "description": "DotSDK suggestions version 2.0",
+  "type": "system_js_gzip",
+  "source": "internal",
+  "sdk": null,
+  "deprecated": false,
+  "size": 83079,
+  "uri": "https://37300be6-4036-464b-9968-73d87cebaba4.zappsusercontent.com/appfiles/v2/37300be6-4036-464b-9968-73d87cebaba4/1.0/70707ff3bb8f2ae3f373c88624d331c06681c2636153ef0c7324430548d82d07/filerevision/r179/crm_dot_sdk_suggestions.js.gzip",
+  "compiled_file_uri": "https://37300be6-4036-464b-9968-73d87cebaba4.zappsusercontent.com/appfiles/v2/37300be6-4036-464b-9968-73d87cebaba4/1.0/70707ff3bb8f2ae3f373c88624d331c06681c2636153ef0c7324430548d82d07/filerevision/r179/crm_dot_sdk_suggestions.js.gzip",
+  "definition_file_uri": null,
+  "sourcemap_file_uri": null,
+  "help_link_uri": null,
+  "created_by": "CLL Account",
+  "modified_by": null,
+  "createdTime": "2025-09-26T01:57:19-04:00",
+  "updatedTime": "2026-06-02T10:35:49-04:00",
+  "script_uri_field": "compiled_file_uri"
+}

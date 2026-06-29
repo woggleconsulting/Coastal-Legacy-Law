@@ -1,0 +1,11 @@
+string standalone.attorneyFuel_outgoing(Map leadData)
+{
+attorneyFuel = invokeurl
+[
+	url :"https://services.leadconnectorhq.com/hooks/sPH3wZSBEMmhpHyJOGCx/webhook-trigger/6949a6a4-9d6f-4f28-8412-42b7ecc82956"
+	type :POST
+	parameters:leadData
+];
+info attorneyFuel;
+return "";
+}

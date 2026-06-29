@@ -1,0 +1,23 @@
+[
+  {
+    "layout": {
+      "name": "Standard",
+      "id": "6994809000000600302"
+    },
+    "created_time": "2025-09-26T08:56:57-04:00",
+    "modified_time": "2025-09-26T08:56:57-04:00",
+    "name": "System defined",
+    "modified_by": null,
+    "description": "System defined layout rule",
+    "generated_type": "default",
+    "active": true,
+    "id": "6994809000000607472",
+    "source": "web",
+    "created_by": null,
+    "primary_field": {
+      "api_name": "Call_Type",
+      "id": "6994809000000603011"
+    },
+    "module": "Calls"
+  }
+]

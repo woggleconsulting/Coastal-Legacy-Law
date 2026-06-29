@@ -1,0 +1,482 @@
+string standalone.convertLead(Int recordId, String triggerSource)
+{
+info "################################################################";
+info "--- STARTING STANDALONE LLPS CONVERSION ---";
+info "Trigger Source: " + triggerSource + " | Record ID: " + recordId;
+info "################################################################";
+meetingId = null;
+triggerContactId = null;
+leadId = null;
+hostId = null;
+// validate trigger source and get primary lead
+if(triggerSource == "Events")
+{
+	meetingId = recordId;
+	meetingRecord = zoho.crm.getRecordById("Events",meetingId);
+	if(meetingRecord.get("What_Id") == null)
+	{
+		info "ABORTING: No 'Related To' record found on this meeting.";
+		return "";
+	}
+	moduleType = meetingRecord.get("$se_module");
+	if(moduleType != "Leads")
+	{
+		info "ABORTING: Meeting is related to " + moduleType + ", not Leads.";
+		return "";
+	}
+	leadId = meetingRecord.get("What_Id").get("id");
+	meetingOwner = meetingRecord.get("Owner");
+	hostId = ifnull(meetingOwner.get("id"),"");
+}
+else if(triggerSource == "Contacts")
+{
+	triggerContactId = recordId;
+	contactRec = zoho.crm.getRecordById("Contacts",triggerContactId);
+	contactEmail = contactRec.get("Email");
+	if(contactEmail == null || contactEmail == "")
+	{
+		info "ABORTING: Contact has no email to match against Leads.";
+		return "";
+	}
+	leadSearch = zoho.crm.searchRecords("Leads","(Email:equals:" + contactEmail + ")");
+	if(leadSearch.size() > 0)
+	{
+		foundLeadId = leadSearch.get(0).get("id");
+		parentSpouse = zoho.crm.searchRecords("Leads","(Spouse_Partner:equals:" + foundLeadId + ")");
+		parentInq = zoho.crm.searchRecords("Leads","(Inquirer_Lead:equals:" + foundLeadId + ")");
+		if(parentSpouse.size() > 0)
+		{
+			leadId = parentSpouse.get(0).get("id");
+			info "Contact matched a Spouse Lead. Primary Lead found: " + leadId;
+		}
+		else if(parentInq.size() > 0)
+		{
+			leadId = parentInq.get(0).get("id");
+			info "Contact matched an Inquirer Lead. Primary Lead found: " + leadId;
+		}
+		else
+		{
+			leadId = foundLeadId;
+			info "Contact matched a Primary Lead: " + leadId;
+		}
+	}
+	else
+	{
+		info "ABORTING: No matching Lead found for this Contact.";
+		return "";
+	}
+}
+else
+{
+	info "ABORTING: Invalid trigger source.";
+	return "";
+}
+if(leadId == null)
+{
+	info "ABORTING: Could not resolve a Primary Lead ID.";
+	return "";
+}
+leadRecord = zoho.crm.getRecordById("Leads",leadId);
+isConverted = leadRecord.get("Is_Converted");
+leadEmail = leadRecord.get("Email");
+companyName = ifnull(leadRecord.get("Company"),"New LLPS Deal");
+spouseId = ifnull(leadRecord.get("Spouse_Partner"),Map()).get("id");
+inquirerId = ifnull(leadRecord.get("Inquirer_Lead"),Map()).get("id");
+// Initialize contact ID variables
+spouseContactId = null;
+inquiryContactId = null;
+primaryContactId = null;
+finalDealId = null;
+accountIdToUse = null;
+// check if already converted
+if(isConverted == true)
+{
+	info "Primary Lead is already converted. Fetching linked records...";
+	if(leadRecord.get("Converted_Contact") != null)
+	{
+		primaryContactId = leadRecord.get("Converted_Contact").get("id");
+	}
+	if(leadRecord.get("Converted_Account") != null)
+	{
+		accountIdToUse = leadRecord.get("Converted_Account").get("id");
+	}
+	if(leadRecord.get("Converted_Deal") != null)
+	{
+		finalDealId = leadRecord.get("Converted_Deal").get("id");
+	}
+}
+// Account Strategy: find or create (Your Correct File)
+if(accountIdToUse == null)
+{
+	searchAccount = zoho.crm.searchRecords("Accounts","(Account_Name:equals:" + companyName + ")");
+	if(searchAccount.size() > 0)
+	{
+		accountIdToUse = searchAccount.get(0).get("id");
+		info "Existing Account Found: " + accountIdToUse;
+	}
+	else
+	{
+		// create account manually
+		accMap = {"Account_Name":companyName};
+		createAcc = zoho.crm.createRecord("Accounts",accMap);
+		if(createAcc.get("id") != null)
+		{
+			accountIdToUse = createAcc.get("id");
+			info "Created New Account Manually: " + accountIdToUse;
+		}
+	}
+}
+// process spouse
+if(spouseId != null)
+{
+	info "--- PROCESSING SPOUSE ---";
+	spouseRecord = zoho.crm.getRecordById("Leads",spouseId);
+	if(spouseRecord.get("Is_Converted") != true)
+	{
+		convertMapSpouse = {"overwrite_lead_source":true,"notify_lead_owner":true};
+		if(accountIdToUse != null)
+		{
+			convertMapSpouse.put("Accounts",accountIdToUse);
+		}
+		spouseEmail = spouseRecord.get("Email");
+		if(triggerSource == "Contacts" && triggerContactId != null && spouseEmail == contactEmail)
+		{
+			convertMapSpouse.put("Contacts",triggerContactId);
+			convertMapSpouse.put("overwrite",true);
+		}
+		spouseConv = zoho.crm.convertLead(spouseId,convertMapSpouse);
+		info "Spouse Conversion Result: " + spouseConv;
+		if(spouseConv != null && spouseConv.get("Contacts") != null)
+		{
+			spouseContactId = spouseConv.get("Contacts");
+			// Ensure spouse is linked to correct account
+			if(accountIdToUse != null)
+			{
+				zoho.crm.updateRecord("Contacts",spouseContactId,{"Account_Name":accountIdToUse});
+				info "Linked Spouse Contact to Account: " + accountIdToUse;
+			}
+		}
+	}
+	else
+	{
+		// Already converted - get existing contact ID
+		if(spouseRecord.get("Converted_Contact") != null)
+		{
+			spouseContactId = spouseRecord.get("Converted_Contact").get("id");
+			info "Spouse already converted - Contact ID: " + spouseContactId;
+		}
+	}
+}
+// process inquirer
+if(inquirerId != null)
+{
+	info "--- PROCESSING INQUIRER ---";
+	inqRecord = zoho.crm.getRecordById("Leads",inquirerId);
+	if(inqRecord.get("Is_Converted") != true)
+	{
+		convertMapInq = {"overwrite_lead_source":true,"notify_lead_owner":true};
+		if(accountIdToUse != null)
+		{
+			convertMapInq.put("Accounts",accountIdToUse);
+		}
+		inqEmail = inqRecord.get("Email");
+		if(triggerSource == "Contacts" && triggerContactId != null && inqEmail == contactEmail)
+		{
+			convertMapInq.put("Contacts",triggerContactId);
+			convertMapInq.put("overwrite",true);
+		}
+		inqConv = zoho.crm.convertLead(inquirerId,convertMapInq);
+		info "Inquirer Conversion Result: " + inqConv;
+		if(inqConv != null && inqConv.get("Contacts") != null)
+		{
+			inquiryContactId = inqConv.get("Contacts");
+			// Ensure inquirer is linked to correct account
+			if(accountIdToUse != null)
+			{
+				zoho.crm.updateRecord("Contacts",inquiryContactId,{"Account_Name":accountIdToUse});
+				info "Linked Inquirer Contact to Account: " + accountIdToUse;
+			}
+		}
+	}
+	else
+	{
+		// Already converted - get existing contact ID
+		if(inqRecord.get("Converted_Contact") != null)
+		{
+			inquiryContactId = inqRecord.get("Converted_Contact").get("id");
+			info "Inquirer already converted - Contact ID: " + inquiryContactId;
+		}
+	}
+}
+// process primary lead
+if(isConverted != true)
+{
+	info "--- PROCESSING PRIMARY LEAD ---";
+	dealData = {"Deal_Name":companyName,"Stage":"New / Intake","Pipeline":"Intake"};
+	if(hostId != null && hostId != "")
+	{
+		dealData.put("Attorney",hostId);
+	}
+	convertMap = {"overwrite_lead_source":true,"notify_lead_owner":true,"Deals":dealData};
+	if(accountIdToUse != null)
+	{
+		convertMap.put("Accounts",accountIdToUse);
+	}
+	existingContactId = null;
+	if(triggerSource == "Contacts" && triggerContactId != null && leadEmail == contactEmail)
+	{
+		existingContactId = triggerContactId;
+		info "Merging into manually created Contact: " + existingContactId;
+	}
+	else
+	{
+		searchPrimary = zoho.crm.searchRecords("Contacts","(Email:equals:" + leadEmail + ")");
+		if(searchPrimary.size() > 0)
+		{
+			existingContactId = searchPrimary.get(0).get("id");
+			info "Found existing Contact with matching email: " + existingContactId;
+		}
+	}
+	if(existingContactId != null)
+	{
+		convertMap.put("Contacts",existingContactId);
+		convertMap.put("overwrite",true);
+	}
+	// try conversion
+	convResponse = zoho.crm.convertLead(leadId,convertMap);
+	info "Primary Conversion Response: " + convResponse;
+	if(convResponse != null)
+	{
+		finalDealId = convResponse.get("Deals");
+		primaryContactId = convResponse.get("Contacts");
+	}
+	else
+	{
+		info "ERROR: Lead conversion returned null response";
+	}
+}
+if(finalDealId == null)
+{
+	info "Deal ID not in conversion response - attempting recovery...";
+	// find deal id
+	checkLeadAgain = zoho.crm.getRecordById("Leads",leadId);
+	if(checkLeadAgain.get("id") != null && checkLeadAgain.get("Converted_Deal") != null)
+	{
+		finalDealId = checkLeadAgain.get("Converted_Deal").get("id");
+		info "Found Deal ID from Lead record: " + finalDealId;
+	}
+	// find primary contact if still missing
+	if(primaryContactId == null)
+	{
+		if(triggerSource == "Contacts" && triggerContactId != null && leadEmail == contactEmail)
+		{
+			primaryContactId = triggerContactId;
+		}
+		else
+		{
+			primaryContactId = existingContactId;
+		}
+	}
+	if(primaryContactId == null && meetingId != null)
+	{
+		info "Attempting to find Primary Contact via Meeting Re-fetch...";
+		refetchedMeeting = zoho.crm.getRecordById("Events",meetingId);
+		seModule = refetchedMeeting.get("$se_module");
+		whatId = refetchedMeeting.get("What_Id");
+		if(whatId != null)
+		{
+			if(seModule == "Contacts")
+			{
+				primaryContactId = whatId.get("id");
+			}
+			else if(seModule == "Deals")
+			{
+				ghostDeal = zoho.crm.getRecordById("Deals",whatId.get("id"));
+				if(ghostDeal.get("Contact_Name") != null)
+				{
+					primaryContactId = ghostDeal.get("Contact_Name").get("id");
+				}
+			}
+			else if(seModule == "Accounts")
+			{
+				ghostAccountId = whatId.get("id");
+				relatedContacts = zoho.crm.getRelatedRecords("Contacts","Accounts",ghostAccountId);
+				if(relatedContacts.size() > 0)
+				{
+					primaryContactId = relatedContacts.get(0).get("id");
+				}
+			}
+		}
+	}
+	// manual deal creation if still missing
+	if(finalDealId == null)
+	{
+		info "Recovery: Creating Deal MANUALLY.";
+		// Determine contact for deal
+		if(primaryContactId == null)
+		{
+			if(inquiryContactId != null)
+			{
+				primaryContactId = inquiryContactId;
+			}
+			else if(spouseContactId != null)
+			{
+				primaryContactId = spouseContactId;
+			}
+		}
+		if(primaryContactId != null)
+		{
+			dealData = {"Deal_Name":companyName,"Stage":"New / Intake","Pipeline":"Intake","Contact_Name":primaryContactId};
+			if(hostId != null && hostId != "")
+			{
+				dealData.put("Attorney",hostId);
+			}
+			if(accountIdToUse != null)
+			{
+				dealData.put("Account_Name",accountIdToUse);
+			}
+			createDeal = zoho.crm.createRecord("Deals",dealData);
+			if(createDeal.get("id") != null)
+			{
+				finalDealId = createDeal.get("id");
+				info "Manually created Deal: " + finalDealId;
+			}
+		}
+	}
+}
+// Ensure primary contact is linked to correct account and map direct spouse field
+if(primaryContactId != null)
+{
+	contactUpdateMap = Map();
+	if(accountIdToUse != null)
+	{
+		contactUpdateMap.put("Account_Name",accountIdToUse);
+	}
+	if(spouseContactId != null)
+	{
+		contactUpdateMap.put("Spouse_Partner",spouseContactId);
+	}
+	if(!contactUpdateMap.isEmpty())
+	{
+		zoho.crm.updateRecord("Contacts",primaryContactId,contactUpdateMap);
+		info "Updated Primary Contact with Account and Spouse mappings.";
+	}
+}
+// Build and populate Other_Contacts subform on primary contact
+if(primaryContactId != null)
+{
+	info "--- BUILDING OTHER_CONTACTS SUBFORM ---";
+	subformRows = List();
+	if(spouseContactId != null && spouseContactId != primaryContactId)
+	{
+		subformRows.add({"Contact":spouseContactId,"Contact_Relationship":"Spouse","Role_in_Estate_Planning":"Client"});
+		info "Added Spouse to subform: " + spouseContactId;
+	}
+	if(inquiryContactId != null && inquiryContactId != primaryContactId && inquiryContactId != spouseContactId)
+	{
+		subformRows.add({"Contact":inquiryContactId,"Contact_Relationship":"Inquirer","Role_in_Estate_Planning":"Inquirer"});
+		info "Added Inquirer to subform: " + inquiryContactId;
+	}
+	if(subformRows.size() > 0)
+	{
+		zoho.crm.updateRecord("Contacts",primaryContactId,{"Other_Contacts":subformRows});
+		info "Populated Other_Contacts subform with " + subformRows.size() + " entries";
+	}
+	else
+	{
+		info "No additional contacts to add to subform";
+	}
+}
+// Update Deal with all contact references
+if(finalDealId != null)
+{
+	info "--- UPDATING DEAL FIELDS ---";
+	updateMap = Map();
+	if(hostId != null && hostId != "")
+	{
+		updateMap.put("Attorney",hostId);
+	}
+	// Set Contact_Name (prioritize inquirer, then primary)
+	if(inquiryContactId != null)
+	{
+		updateMap.put("Contact_Name",inquiryContactId);
+	}
+	else if(primaryContactId != null)
+	{
+		updateMap.put("Contact_Name",primaryContactId);
+	}
+	// Set Spouse_Name
+	if(spouseContactId != null)
+	{
+		updateMap.put("Spouse_Name",spouseContactId);
+	}
+	if(!updateMap.isEmpty())
+	{
+		zoho.crm.updateRecord("Deals",finalDealId,updateMap);
+		info "Updated Deal with contact references: " + updateMap;
+	}
+	// Update Account name
+	if(accountIdToUse != null)
+	{
+		zoho.crm.updateRecord("Accounts",accountIdToUse,{"Account_Name":companyName});
+		info "Updated Account name to: " + companyName;
+	}
+	// Move meeting to deal
+	if(meetingId != null)
+	{
+		zoho.crm.updateRecord("Events",meetingId,{"What_Id":finalDealId,"Se_module":"Deals"});
+		info "SUCCESS: Meeting re-associated to Deal: " + finalDealId;
+	}
+}
+else
+{
+	info "FAILED: No Deal ID available after all recovery attempts.";
+}
+// Clean up ghost accounts
+info "--- CHECKING FOR GHOST ACCOUNTS ---";
+allContactIds = List();
+if(primaryContactId != null)
+{
+	allContactIds.add(primaryContactId);
+}
+if(spouseContactId != null)
+{
+	allContactIds.add(spouseContactId);
+}
+if(inquiryContactId != null)
+{
+	allContactIds.add(inquiryContactId);
+}
+ghostAccounts = List();
+for each  cId in allContactIds
+{
+	cRec = zoho.crm.getRecordById("Contacts",cId);
+	if(cRec.get("Account_Name") != null)
+	{
+		accId = cRec.get("Account_Name").get("id");
+		if(accId != accountIdToUse && !ghostAccounts.contains(accId))
+		{
+			ghostAccounts.add(accId);
+			info "Identified Ghost Account: " + accId;
+		}
+	}
+}
+// Delete all ghost accounts
+if(ghostAccounts.size() > 0)
+{
+	info "Deleting " + ghostAccounts.size() + " ghost account(s)";
+	for each  ghostId in ghostAccounts
+	{
+		delResp = zoho.crm.invokeConnector("crm.delete",{"module":"Accounts","ids":ghostId});
+		info "Deleted Ghost Account " + ghostId + ": " + delResp;
+	}
+}
+else
+{
+	info "No ghost accounts found";
+}
+info "################################################################";
+info "--- END OF SCRIPT ---";
+info "################################################################";
+return "";
+}

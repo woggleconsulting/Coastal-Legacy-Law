@@ -1,0 +1,27 @@
+void automation.meetings_createCalendarLinks(Int eventId)
+{
+event = zoho.crm.getRecordById("Events",eventId);
+if(event.isEmpty() == false)
+{
+	startDT = event.get("Start_DateTime");
+	endDT = event.get("End_DateTime");
+	title = ifnull(event.get("Event_Title"),"");
+	location = ifnull(event.get("Location"),"");
+	description = ifnull(event.get("Description"),"");
+	if(startDT != null && endDT != null)
+	{
+		dateStart = startDT.toString("yyyyMMdd'T'HHmmss'Z'");
+		dateEnd = endDT.toString("yyyyMMdd'T'HHmmss'Z'");
+		startISO = startDT.toString("yyyy-MM-dd'T'HH:mm:ss");
+		endISO = endDT.toString("yyyy-MM-dd'T'HH:mm:ss");
+		googleLink = "https://calendar.google.com/calendar/render?" + "action=TEMPLATE" + "&text=" + encodeUrl(title) + "&dates=" + dateStart + "/" + dateEnd + "&details=" + encodeUrl(description) + "&location=" + encodeUrl(location);
+		outlookLink = "https://outlook.live.com/calendar/0/deeplink/compose?" + "path=/calendar/action/compose" + "&rru=addevent" + "&subject=" + encodeUrl(title) + "&startdt=" + startISO + "&enddt=" + endISO + "&body=" + encodeUrl(description) + "&location=" + encodeUrl(location);
+		office365Link = "https://outlook.office.com/calendar/0/deeplink/compose?" + "path=/calendar/action/compose" + "&rru=addevent" + "&subject=" + encodeUrl(title) + "&startdt=" + startISO + "&enddt=" + endISO + "&body=" + encodeUrl(description) + "&location=" + encodeUrl(location);
+		updateMap = Map();
+		updateMap.put("Google_Calendar_Link",googleLink);
+		updateMap.put("Outlook_Calendar_Link",outlookLink);
+		updateMap.put("Office365_Calendar_Link",office365Link);
+		updateResp = zoho.crm.updateRecord("Events",eventId.toString(),updateMap);
+	}
+}
+}

@@ -1,0 +1,28 @@
+{
+  "id": "1716576000000007161",
+  "api_name": "processsubfolders",
+  "display_name": "processSubfolders",
+  "category": "standalone",
+  "namespace": "standalone",
+  "return_type": "string",
+  "language": "deluge",
+  "source": "crm",
+  "rest_api": [
+    {
+      "active": false,
+      "type": "oauth",
+      "url": "https://crm.zoho.com/crm/v7/functions/processsubfolders/actions/execute?auth_type=oauth"
+    },
+    {
+      "active": false,
+      "type": "zapikey",
+      "url": "https://crm.zoho.com/crm/v7/functions/processsubfolders/actions/execute?auth_type=apikey&zapikey=1003.54582d83cf1bf5ef29214bc16f1cdc1d.6055fb9536c658116a6b1777344a917d"
+    }
+  ],
+  "associated_place": null,
+  "description": null,
+  "createdTime": 1758891461000,
+  "updatedTime": 1771246946000,
+  "arguments": null,
+  "detailStatus": 200
+}

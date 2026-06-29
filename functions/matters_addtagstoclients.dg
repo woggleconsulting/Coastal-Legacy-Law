@@ -1,0 +1,68 @@
+void automation.matters_addTagsToClients(int recId)
+{
+dealRec = zoho.crm.getRecordById("Deals",recId);
+if(dealRec == null)
+{
+	return;
+}
+noLongerReason = dealRec.get("No_Longer_Client_Reason");
+shouldBlacklist = false;
+if(noLongerReason != null && noLongerReason == "Blacklisted")
+{
+	shouldBlacklist = true;
+}
+// Collect lookup IDs
+contactIds = List();
+contactLookup = dealRec.get("Contact_Name");
+if(contactLookup != null)
+{
+	contactIds.add(contactLookup.get("id"));
+}
+spouseLookup = dealRec.get("Spouse_Name");
+if(spouseLookup != null)
+{
+	contactIds.add(spouseLookup.get("id"));
+}
+primaryLookup = dealRec.get("Primary_Contact");
+if(primaryLookup != null)
+{
+	contactIds.add(primaryLookup.get("id"));
+}
+if(contactIds.isEmpty())
+{
+	info "No related contacts found.";
+	return;
+}
+for each  contactId in contactIds
+{
+	tag1 = Map();
+	tag1.put("name","Blacklisted");
+	tags_list = List();
+	tags_list.add(tag1);
+	param = Map();
+	param.put("tags",tags_list);
+	if(shouldBlacklist)
+	{
+		response = invokeurl
+		[
+			url :"https://www.zohoapis.com/crm/v8/Contacts/" + contactId + "/actions/add_tags"
+			type :POST
+			parameters:param.toString()
+			connection:"zcrm"
+		];
+		info response;
+	}
+	else
+	{
+		param.put("ids",{contactId});
+		response = invokeurl
+		[
+			url :"https://www.zohoapis.com/crm/v8/Contacts/actions/remove_tags"
+			type :POST
+			parameters:param.toString()
+			connection:"zcrm"
+		];
+		info response;
+	}
+}
+}

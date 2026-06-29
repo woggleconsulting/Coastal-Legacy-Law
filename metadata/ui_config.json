@@ -1,0 +1,846 @@
+{
+  "wizards": [],
+  "webforms": [],
+  "custom_buttons": {
+    "Leads": [
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          },
+          {
+            "name": "Standard - non export",
+            "id": "6994809000011750001"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600322"
+          }
+        ],
+        "sequence_number": null,
+        "modified_time": "2026-06-24T14:04:29-04:00",
+        "api_name": "MP_New_Appointment",
+        "name": "New Appointment",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "widget",
+        "details": {
+          "widget": {
+            "hosting": "External",
+            "name": "New Appointment",
+            "description": null,
+            "url_expression": "https://bookings.zoho.com/embed#/",
+            "id": "6994809000000643107"
+          }
+        },
+        "id": "6994809000000617720",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600322"
+          }
+        ],
+        "sequence_number": null,
+        "modified_time": "2025-11-05T12:14:42-05:00",
+        "api_name": "MP_Email_Booking_URL",
+        "name": "Email Booking URL",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "custom_function",
+        "details": {
+          "custom_function": {
+            "entity_params": [
+              {
+                "api_name": "${!Leads.Id}",
+                "name": "$map_lead_$KEY$Leads.ID",
+                "id": null,
+                "type": "merge_field"
+              },
+              {
+                "api_name": "${!Leads.First_Name}",
+                "name": "$map_lead_$KEY$First_Name",
+                "id": "6994809000000602696",
+                "type": "merge_field"
+              },
+              {
+                "api_name": "${!Leads.Email}",
+                "name": "$map_lead_$KEY$Email",
+                "id": "6994809000000602699",
+                "type": "merge_field"
+              },
+              {
+                "api_name": "${!Leads.Last_Name}",
+                "name": "$map_lead_$KEY$Last_Name",
+                "id": "6994809000000602697",
+                "type": "merge_field"
+              }
+            ],
+            "name": "emailCalendarToLead",
+            "device_permissions": {
+              "location": false
+            },
+            "language": "deluge",
+            "id": "1716576000000007045",
+            "additional_params": null
+          }
+        },
+        "id": "6994809000000617721",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600322"
+          }
+        ],
+        "sequence_number": 3,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Send_with_Zoho_Sign1",
+        "name": "Send with Zoho Sign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/homepage?module=Leads&record_id=${!Leads.id}&record_name=${!Leads.Last_Name}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617723",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": null,
+        "sequence_number": null,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Send_with_Zoho_Sign12",
+        "name": "Send with Zoho Sign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/createbulkrequest?module=Leads&record_ids=${!Leads.id}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617732",
+        "position": "list_view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "crm",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600322"
+          }
+        ],
+        "sequence_number": 1,
+        "modified_time": "2026-06-09T14:17:15-04:00",
+        "api_name": "Intake_Call",
+        "name": "Book Inquiry Call",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://forms.zohopublic.com/dejesuslawgroup/form/15MinuteCall/formperma/4HKWNCwhdTWw5FwRJISYE7nobB3PhJB7gd78NdV1t90firstName=${!Leads.First_Name}&lastName=${!Leads.Last_Name}&email=${!Leads.Email}&phone=${!Leads.Phone}&scheduleBy=${!users.first_name} ${!users.last_name}",
+            "display_in": "new_tab"
+          }
+        },
+        "id": "6994809000005180787",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "crm",
+        "layouts": null,
+        "sequence_number": 1,
+        "modified_time": "2026-06-09T14:17:27-04:00",
+        "api_name": "New_Intake_Call",
+        "name": "New Inquiry Call",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://forms.zohopublic.com/dejesuslawgroup/form/15MinuteCall/formperma/4HKWNCwhdTWw5FwRJISYE7nobB3PhJB7gd78NdV1t90?scheduleBy=${!users.first_name} ${!users.last_name}",
+            "display_in": "new_tab"
+          }
+        },
+        "id": "6994809000005180795",
+        "position": "list_view_without_record"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          },
+          {
+            "name": "Standard - non export",
+            "id": "6994809000011750001"
+          }
+        ],
+        "description": null,
+        "source": "crm",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600322"
+          }
+        ],
+        "sequence_number": 2,
+        "modified_time": "2026-06-24T14:03:49-04:00",
+        "api_name": "Schedule_LLPS",
+        "name": "Schedule LLPS",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://forms.zohopublic.com/dejesuslawgroup/form/LegalLifePlanningSessionIntake/formperma/o4x_QYRWI6wNaKyYFvVZPDzr8LApVPViF1PBliwrac0?firstName=${!Leads.First_Name}&lastName=${!Leads.Last_Name}&leadStatus=${!Leads.Lead_Status}&email=${!Leads.Email}&phone=${!Leads.Phone}",
+            "display_in": "new_tab"
+          }
+        },
+        "id": "6994809000008296001",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          },
+          {
+            "name": "Standard - non export",
+            "id": "6994809000011750001"
+          }
+        ],
+        "description": null,
+        "source": "crm",
+        "layouts": null,
+        "sequence_number": 2,
+        "modified_time": "2026-06-25T14:10:10-04:00",
+        "api_name": "Test_Intake_Qualified",
+        "name": "Test Intake Qualified",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "widget",
+        "details": {
+          "widget": {
+            "hosting": "Internal",
+            "name": "Intake Widget",
+            "description": null,
+            "url_expression": "https://ab0cf80d-47a3-4c28-9ebb-50f42a7a204c.zappsusercontent.com/appfiles/v2/ab0cf80d-47a3-4c28-9ebb-50f42a7a204c/7.0/34d9924fa3cd2326cd3267bc9eceefb5f2259d4da6eaf14834f609497db8efe9/r1/app",
+            "id": "6994809000011971054"
+          }
+        },
+        "id": "6994809000011971060",
+        "position": "list_view_without_record"
+      }
+    ],
+    "Contacts": [
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600313"
+          }
+        ],
+        "sequence_number": null,
+        "modified_time": "2025-11-05T12:14:42-05:00",
+        "api_name": "MP_New_Appointment",
+        "name": "New Appointment",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "widget",
+        "details": {
+          "widget": {
+            "hosting": "External",
+            "name": "New Appointment",
+            "description": null,
+            "url_expression": "https://bookings.zoho.com/embed#/",
+            "id": "6994809000000643106"
+          }
+        },
+        "id": "6994809000000617718",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600313"
+          }
+        ],
+        "sequence_number": null,
+        "modified_time": "2025-11-05T12:14:42-05:00",
+        "api_name": "MP_Email_Booking_URL",
+        "name": "Email Booking URL",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "custom_function",
+        "details": {
+          "custom_function": {
+            "entity_params": [
+              {
+                "api_name": "${!Contacts.Id}",
+                "name": "$map_contact_$KEY$Contacts.ID",
+                "id": null,
+                "type": "merge_field"
+              },
+              {
+                "api_name": "${!Contacts.First_Name}",
+                "name": "$map_contact_$KEY$First_Name",
+                "id": "6994809000000602645",
+                "type": "merge_field"
+              },
+              {
+                "api_name": "${!Contacts.Email}",
+                "name": "$map_contact_$KEY$Email",
+                "id": "6994809000000602649",
+                "type": "merge_field"
+              },
+              {
+                "api_name": "${!Contacts.Last_Name}",
+                "name": "$map_contact_$KEY$Last_Name",
+                "id": "6994809000000602646",
+                "type": "merge_field"
+              }
+            ],
+            "name": "emailcalendar",
+            "device_permissions": {
+              "location": false
+            },
+            "language": "deluge",
+            "id": "1716576000000007081",
+            "additional_params": null
+          }
+        },
+        "id": "6994809000000617719",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600313"
+          }
+        ],
+        "sequence_number": null,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Send_with_Zoho_Sign1",
+        "name": "Send with Zoho Sign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/homepage?module=Contacts&record_id=${!Contacts.id}&record_name=${!Contacts.Last_Name}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617722",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": null,
+        "sequence_number": null,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Send_with_Zoho_Sign12",
+        "name": "Send with Zoho Sign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/createbulkrequest?module=Contacts&record_ids=${!Contacts.id}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617731",
+        "position": "list_view"
+      }
+    ],
+    "Deals": [
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600310"
+          }
+        ],
+        "sequence_number": null,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Send_with_Zoho_Sign1",
+        "name": "Send with Zoho Sign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/homepage?module=Deals&record_id=${!Deals.id}&record_name=${!Deals.Deal_Name}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617725",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": null,
+        "sequence_number": null,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Send_with_Zoho_Sign12",
+        "name": "Send with Zoho Sign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/createbulkrequest?module=Deals&record_ids=${!Deals.id}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617734",
+        "position": "list_view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "crm",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600310"
+          }
+        ],
+        "sequence_number": 2,
+        "modified_time": "2026-05-21T11:38:14-04:00",
+        "api_name": "Book_LLPS",
+        "name": "Book Meeting",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "widget",
+        "details": {
+          "widget": {
+            "hosting": "Internal",
+            "name": "Booking Widget",
+            "description": null,
+            "url_expression": "https://3e71ff46-7d03-4373-bba2-04277bc8873f.zappsusercontent.com/appfiles/v2/3e71ff46-7d03-4373-bba2-04277bc8873f/8.0/c014b9024570ff1f44e3cdbb3df7ad01964070287874763bd934dc6d5a71f179/r1/app",
+            "id": "6994809000009494019"
+          }
+        },
+        "id": "6994809000009494025",
+        "position": "view"
+      }
+    ],
+    "Campaigns": [
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "crm",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600308"
+          },
+          {
+            "display_label": "Zoho Campaigns",
+            "api_name": "Zoho_Campaigns__s",
+            "name": "Zoho Campaigns",
+            "id": "6994809000001003003"
+          }
+        ],
+        "sequence_number": 1,
+        "modified_time": "2026-03-03T13:40:24-05:00",
+        "api_name": "Update_Member_Status",
+        "name": "Update Member Status",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "widget",
+        "details": {
+          "widget": {
+            "hosting": "Internal",
+            "name": "Update Member Status",
+            "description": null,
+            "url_expression": "https://ac945877-c23e-44f0-a033-d89afdbe8135.zappsusercontent.com/appfiles/v2/ac945877-c23e-44f0-a033-d89afdbe8135/1.0/40c6f3719e9154d12d6928bb43caa2fa35cf472a780969656dfdbd2daafdc8bc/r5/app",
+            "id": "6994809000005008710"
+          }
+        },
+        "id": "6994809000005008722",
+        "position": "view"
+      }
+    ],
+    "Accounts": [
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600312"
+          }
+        ],
+        "sequence_number": null,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Send_with_Zoho_Sign1",
+        "name": "Send with Zoho Sign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/homepage?module=Accounts&record_id=${!Accounts.id}&record_name=${!Accounts.Account_Name}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617724",
+        "position": "view"
+      },
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": null,
+        "sequence_number": null,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Send_with_Zoho_Sign12",
+        "name": "Send with Zoho Sign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/createbulkrequest?module=Accounts&record_ids=${!Accounts.id}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617733",
+        "position": "list_view"
+      }
+    ],
+    "zohosign__ZohoSign_Documents": [
+      {
+        "user_types": null,
+        "profiles": [
+          {
+            "name": "Administrator",
+            "id": "6994809000000600034"
+          },
+          {
+            "name": "Standard",
+            "id": "6994809000000600035"
+          }
+        ],
+        "description": null,
+        "source": "marketplace",
+        "layouts": [
+          {
+            "display_label": "Standard",
+            "api_name": "Standard__s",
+            "name": "Standard",
+            "id": "6994809000000600348"
+          }
+        ],
+        "sequence_number": null,
+        "modified_time": "2026-06-09T12:23:25-04:00",
+        "api_name": "MP_Open_in_ZohoSign",
+        "name": "Open in ZohoSign",
+        "modified_by": {
+          "name": "CLL Account",
+          "id": "6994809000000574001"
+        },
+        "action": "url",
+        "details": {
+          "url": {
+            "encode_format": "UTF-8",
+            "url_expression": "https://sign.zoho.com/api/v1/integrations/zohocrm/request?request_id=${!zohosign__ZohoSign_Documents.id}&crmzgid=${!org.Id}",
+            "display_in": "new_window"
+          }
+        },
+        "id": "6994809000000617730",
+        "position": "view"
+      }
+    ]
+  },
+  "portals": [],
+  "territories": [],
+  "inventory_templates": []
+}

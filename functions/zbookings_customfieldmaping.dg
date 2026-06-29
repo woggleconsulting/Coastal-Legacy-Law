@@ -1,0 +1,50 @@
+string standalone.zbookings_customFieldMapping(Int recId)
+{
+meetingResp = zoho.crm.getRecordById("Events",recId);
+bookingId = meetingResp.get("zohobookingstest__BookingId");
+zbookingsMeetingResp = invokeurl
+[
+	url :"https://www.zohoapis.com/bookings/v1/json/getappointment?booking_id=" + bookingId
+	type :GET
+	connection:"zbookings"
+];
+zb_customFields = zbookingsMeetingResp.get("response").get("returnvalue").get("customer_more_info");
+zb_customFieldNames = zbookingsMeetingResp.get("response").get("returnvalue").get("customer_more_info").keys();
+returnMap = Map();
+relRecFields = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v7/settings/fields?module=" + meetingResp.get("$se_module")
+	type :GET
+	connection:"zcrm"
+];
+customFields = list();
+fieldMap = Map();
+for each  zb_field in zb_customFieldNames
+{
+	for each  field in relRecFields.get("fields")
+	{
+		if(field.get("field_label").equals(zb_field))
+		{
+			fieldMap.put(field.get("api_name"),ifnull(zb_customFields.get(zb_field),""));
+		}
+	}
+}
+//----------//
+if(!meetingResp.get("Who_Id").isNull())
+{
+	updateRecId = meetingResp.get("Who_Id").get("id");
+}
+else
+{
+	updateRecId = meetingResp.get("What_Id").get("id");
+}
+//----------//
+if(meetingResp.get("$se_module").equals("Deals"))
+{
+	updateRec_contact = zoho.crm.updateRecord("Contacts",meetingResp.get("Who_Id").get("id"),fieldMap,{"trigger":{"workflow"}});
+	returnMap.put("updateRec_contact",updateRec_contact);
+}
+updateRec = zoho.crm.updateRecord(meetingResp.get("$se_module"),updateRecId,fieldMap,{"trigger":{"workflow"}});
+returnMap.put("updateRec",updateRec);
+return returnMap;
+}

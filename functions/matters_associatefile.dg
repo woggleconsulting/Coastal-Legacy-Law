@@ -1,0 +1,6 @@
+void automation.matters_associateFile(int recId)
+{
+recResp = zoho.crm.getRecordById("Deals",recId);
+fileId = zoho.crm.getRecordById("Contacts",recResp.get("Contact_Name").get("id")).get("Account_Name").get("id");
+updateRec = zoho.crm.updateRecord("Deals",recId,{"Account_Name":fileId});
+}
