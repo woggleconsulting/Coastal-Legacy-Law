@@ -1,5 +1,0 @@
-void automation.matters_createWorkdriveFolders(Int recordId)
-{
-createWorkdriveFolders = standalone.createWorkdriveFolders(recordId);
-info createWorkdriveFolders;
-}

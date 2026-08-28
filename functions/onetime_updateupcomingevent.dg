@@ -1,4 +1,0 @@
-string standalone.onetime_updateUpcomingEvent()
-{
-return "";
-}

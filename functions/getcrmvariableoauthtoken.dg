@@ -1,4 +1,0 @@
-string standalone.getCRMVariableOAuthToken()
-{
-return zoho.crm.getOrgVariable("CRMVariableOAuthToken");
-}

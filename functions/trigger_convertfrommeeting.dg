@@ -1,5 +1,0 @@
-void automation.trigger_convertFromMeeting(int meetingId)
-{
-info "Triggering Standalone Lead Conversion from Meeting ID: " + meetingId;
-standalone.convertLead(meetingId,"Events");
-}

@@ -1,5 +1,0 @@
-void ExtensionAction.Install_Function(map installParamMap)
-{
-tempMap = Map();
-zohobookingstest.updateCustomerModule(tempMap);
-}

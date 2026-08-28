@@ -1,5 +1,0 @@
-void automation.trigger_convertFromContact(Int contactId)
-{
-info "Triggering Standalone Lead Conversion from Contact ID: " + contactId;
-standalone.convertLead(contactId,"Contacts");
-}

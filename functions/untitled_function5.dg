@@ -1,6 +1,0 @@
-void ConnectorAction.Untitled_Function5()
-{
-scheduledMap = Map();
-scheduledMap.put("reqBody",{"urlMap":{"ACTION":"DELETE"}});
-response = zoho.crm.invokeConnector("zohobookingstest.bookingsapi.crmpluginhandler",scheduledMap);
-}

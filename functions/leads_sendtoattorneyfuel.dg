@@ -1,5 +1,0 @@
-void automation.leads_sendToAttorneyFuel(Int leadId)
-{
-leadData = zoho.crm.getRecordById("Leads",leadId);
-standalone.attorneyFuel_outgoing(leadData);
-}

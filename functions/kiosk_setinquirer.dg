@@ -1,8 +1,0 @@
-void automation.kiosk_setInquirer(Int recordId)
-{
-recordIdLong = recordId.toLong();
-updateMap = Map();
-updateMap.put("Inquirer_Lead",recordIdLong);
-response = zoho.crm.updateRecord("Leads",recordIdLong,updateMap);
-info response;
-}

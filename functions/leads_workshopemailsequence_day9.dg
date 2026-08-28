@@ -1,4 +1,0 @@
-void automation.leads_workshopEmailsSequence_day9(int recId)
-{
-standalone.workshopEmailSequence(recId,9);
-}
